@@ -174,14 +174,28 @@ module Refinery
           def paginate_all_#{plural_name}
             # If we have already found a set then we don't need to again
             find_all_#{plural_name} if @#{plural_name}.nil?
-
-            per_page = if #{options[:per_page].present?.inspect}
+            
+	    per_page = if #{options[:per_page].present?.inspect}
               #{options[:per_page].inspect}
             elsif #{class_name}.methods.map(&:to_sym).include?(:per_page)
               #{class_name}.per_page
             end
+	
+	    if #{options[:order_over].present?.inspect}
+	    	# @#{plural_name}.sort_by!(&#{options[:order_over].inspect})
+		puts "hello0"
+	    	@#{plural_name} = @#{plural_name}.sort_by(&#{options[:order_over].inspect})
+		puts "hello1"
+            	# @#{plural_name} = @#{plural_name}.paginate(params[:page], per_page)
+            	@#{plural_name} = @#{plural_name}.paginate(:page => params[:page], :per_page => per_page)
+	    else
+            	@#{plural_name} = @#{plural_name}.paginate(:page => params[:page], :per_page => per_page)
+	    end
 
-            @#{plural_name} = @#{plural_name}.paginate(:page => params[:page], :per_page => per_page)
+	    puts "hello3: " + @#{plural_name}.inspect
+
+	    puts "hello4"
+	    @#{plural_name}
           end
 
           # If the controller is being accessed via an ajax request
@@ -240,7 +254,9 @@ module Refinery
           if options[:paging]
             module_eval %(
               def index
+	    	puts "hello-1"
                 paginate_all_#{plural_name}
+	    	puts "hello1000"
 
                 render_partial_response?
               end
