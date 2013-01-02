@@ -182,17 +182,14 @@ module Refinery
             end
 	
 	    if #{options[:order_over].present?.inspect}
-	    	# @#{plural_name}.sort_by!(&#{options[:order_over].inspect})
-		puts "hello0"
+		puts "hello0: " + @#{plural_name}.count.to_s
 	    	@#{plural_name} = @#{plural_name}.sort_by(&#{options[:order_over].inspect})
-		puts "hello1"
-            	# @#{plural_name} = @#{plural_name}.paginate(params[:page], per_page)
-            	@#{plural_name} = @#{plural_name}.paginate(:page => params[:page], :per_page => per_page)
-	    else
-            	@#{plural_name} = @#{plural_name}.paginate(:page => params[:page], :per_page => per_page)
+		puts "hello1: '" + params[:page].to_s + "', '" + per_page.to_s + "'" + @#{plural_name}.count.to_s
 	    end
+            
+	    @#{plural_name} = @#{plural_name}.paginate({:page => params[:page], :per_page => per_page})
 
-	    puts "hello3: " + @#{plural_name}.inspect
+	    puts "hello3: " + @#{plural_name}.count.to_s + ", ASDF: " + @#{plural_name}.inspect
 
 	    puts "hello4"
 	    @#{plural_name}
@@ -231,7 +228,9 @@ module Refinery
             module_eval %(
               def index
                 search_all_#{plural_name} if searching?
-                paginate_all_#{plural_name}
+		puts "index paginate all"
+                paginate_all_#{plural_name} unless @#{plural_name}.class <= WillPaginate::Collection
+		puts "index paginate all ended"
 
                 render_partial_response?
               end
