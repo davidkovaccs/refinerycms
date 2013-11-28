@@ -22,6 +22,7 @@ module Refinery
             c.url_format = Refinery::Resources.dragonfly_url_format
             c.secret = Refinery::Resources.dragonfly_secret
             c.define_url do |app, job, opts|
+	     Rails.logger.info "Image For URL: #{job.inspect}, #{app.datastore.url_for(job.uid)}"
     	     if job.step_types == [:fetch]
       		asset_host = Rails.application.config.action_controller.asset_host
       		asset_url = app.datastore.url_for(job.uid)
