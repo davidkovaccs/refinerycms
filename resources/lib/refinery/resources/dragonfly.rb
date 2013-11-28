@@ -21,6 +21,15 @@ module Refinery
             c.datastore.root_path = Refinery::Resources.datastore_root_path
             c.url_format = Refinery::Resources.dragonfly_url_format
             c.secret = Refinery::Resources.dragonfly_secret
+            c.define_url do |app, job, opts|
+    	     if job.step_types == [:fetch]
+      		asset_host = Rails.application.config.action_controller.asset_host
+      		asset_url = app.datastore.url_for(job.uid)
+      		"#{ENV['ASSET_HOST']}#{asset_url}"
+    	     else
+      		app.server.url_for(job, opts)
+    	     end
+           end
           end
 
           if ::Refinery::Resources.s3_backend
